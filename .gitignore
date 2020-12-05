@@ -1,0 +1,5 @@
+# Ignoring the Vagrant folder
+.vagrant
+
+# Ignoring the private key
+configs/anspvtkey
