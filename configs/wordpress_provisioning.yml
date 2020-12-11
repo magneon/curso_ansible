@@ -51,3 +51,17 @@
             - php7.2-mysql
           state: latest
         become: yes
+
+      - name: 'Cria o banco de dados da Softcube'
+        mysql_db:
+          name: softcube_db
+          state: present
+        become: yes
+
+      - name: "Criar usuário no banco de dados"
+        mysql_user:
+          name: softcube
+          password: Brasil@77!
+          priv: 'softcube_db.*:ALL'
+          state: present
+        become: yes
