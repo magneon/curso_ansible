@@ -2,4 +2,10 @@
 .vagrant
 
 # Ignoring the private key
-configs/anspvtkey
+configs/anskey
+
+# Ignoring logs
+*.log
+
+# Ignoring retryies provided by Ansible
+*.retry

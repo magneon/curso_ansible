@@ -1,0 +1,33 @@
+---
+  - hosts: all
+    tasks:
+      # - name: 'Instala o PHP 7.2'
+      #   apt:
+      #     name: php7.2
+      #     state: latest
+      #   become: yes
+      # - name: 'Instala o Apache2'
+      #   apt:
+      #     name: apache2
+      #     state: latest
+      #   become: yes
+      # - name: 'Instala o Apache Mod PHP 7.2'
+      #   apt:
+      #     name: libapache2-mod-php7.2
+      #     state: latest
+      #   become: yes
+      - name: 'Instala pacotes de dependência do sistema operacional'
+        apt:
+          name: "{{ item }}"
+          state: latest
+        become: yes
+        with_items:
+          - php7.2
+          - apache2
+          - libapache2-mod-php7.2
+          - php7.2-gd
+          - php-ssh2
+          - libmcrypt-dev
+          - mysql-server-5.7
+          - python-mysqldb
+          - php7.2-mysql
