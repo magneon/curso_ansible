@@ -27,6 +27,12 @@ $copy_public_key = <<-SCRIPT
   echo "Done"
 SCRIPT
 
+$install_python = <<-SCRIPT
+  echo "Installing Python"
+  apt-get update >> python_install.log && apt-get install python -y >> python_install.log
+  echo "Done"
+SCRIPT
+
 Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/bionic64"
@@ -64,5 +70,6 @@ Vagrant.configure("2") do |config|
 
     wordpress.vm.synced_folder "./configs", "/configs"
     wordpress.vm.provision "shell", inline: $copy_public_key
+    wordpress.vm.provision "shell", inline: $install_python
   end
 end

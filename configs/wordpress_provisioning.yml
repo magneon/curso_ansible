@@ -1,6 +1,7 @@
 ---
   - hosts: all
     tasks:
+      # Initial way to install packages and dependencies using Ansible
       # - name: 'Instala o PHP 7.2'
       #   apt:
       #     name: php7.2
@@ -16,18 +17,37 @@
       #     name: libapache2-mod-php7.2
       #     state: latest
       #   become: yes
-      - name: 'Instala pacotes de dependência do sistema operacional'
+
+      # Installing packages and dependencies using with_items function and {{ item }} variable
+      # - name: 'Instala pacotes de dependência do sistema operacional'
+      #   apt:
+      #     name: "{{ item }}"
+      #     state: latest
+      #   become: yes
+      #   with_items:
+      #     - php7.2
+      #     - apache2
+      #     - libapache2-mod-php7.2
+      #     - php7.2-gd
+      #     - php-ssh2
+      #     - libmcrypt-dev
+      #     - mysql-server-5.7
+      #     - python-mysqldb
+      #     - php7.2-mysql
+
+      # Installing packages and dependencies using only the name os packages
+      # This way is less verbose then the previous way, but less informative in what is being installed
+      - name: 'Instala pacotes de dependências do sistema operacional'
         apt:
-          name: "{{ item }}"
+          name:
+            - php7.2
+            - apache2
+            - libapache2-mod-php7.2
+            - php7.2-gd
+            - php-ssh2
+            - libmcrypt-dev
+            - mysql-server-5.7
+            - python-mysqldb
+            - php7.2-mysql
           state: latest
         become: yes
-        with_items:
-          - php7.2
-          - apache2
-          - libapache2-mod-php7.2
-          - php7.2-gd
-          - php-ssh2
-          - libmcrypt-dev
-          - mysql-server-5.7
-          - python-mysqldb
-          - php7.2-mysql
