@@ -1,5 +1,11 @@
 ---
   - hosts: all
+    handlers:
+      - name: restart apache
+        service:
+          name: apache2
+          state: restarted
+        become: yes
     tasks:
       # Initial way to install packages and dependencies using Ansible
       # - name: 'Instala o PHP 7.2'
@@ -58,10 +64,48 @@
           state: present
         become: yes
 
-      - name: "Criar usuário no banco de dados"
+      - name: 'Criar usuário no banco de dados'
         mysql_user:
           name: softcube
           password: Brasil@77!
           priv: 'softcube_db.*:ALL'
           state: present
         become: yes
+
+      - name: 'Faz download do wordpress'
+        get_url:
+          url: https://br.wordpress.org/latest-pt_BR.tar.gz
+          dest: /tmp/latest-pt_BR.tar.gz
+
+      - name: 'Descompactar projeto do wordpress'
+        unarchive:
+          src: /tmp/latest-pt_BR.tar.gz
+          dest: /var/www/
+          remote_src: yes
+        become: yes
+
+      - name: 'Copia o arquivo de configuração do Wordpress'
+        copy:
+          src: '/var/www/wordpress/wp-config-sample.php'
+          dest: '/var/www/wordpress/wp-config.php'
+          remote_src: yes
+        become: yes
+
+      - name: 'Configura o wordpress'
+        replace:
+          path: /var/www/wordpress/wp-config.php
+          regexp: '{{ item.chave }}'
+          replace: '{{ item.valor }}'
+        with_items:
+            - { chave: 'nome_do_banco_de_dados_aqui', valor: 'softcube_db' }
+            - { chave: 'nome_de_usuario_aqui', valor: 'softcube' }
+            - { chave: 'senha_aqui', valor: 'Brasil@77!' }
+        become: yes
+
+      - name: 'Serve o Wordpress no Apache'
+        copy:
+          src: /configs/apache/000-default.conf
+          dest: /etc/apache2/sites-available/000-default.conf
+        become: yes
+        notify:
+          - restart apache
