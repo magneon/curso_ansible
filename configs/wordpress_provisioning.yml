@@ -1,5 +1,5 @@
 ---
-  - hosts: all
+  - hosts: wordpress
     handlers:
       - name: restart apache
         service:
@@ -58,20 +58,6 @@
           state: latest
         become: yes
 
-      - name: 'Cria o banco de dados da Softcube'
-        mysql_db:
-          name: softcube_db
-          state: present
-        become: yes
-
-      - name: 'Criar usuário no banco de dados'
-        mysql_user:
-          name: softcube
-          password: Brasil@77!
-          priv: 'softcube_db.*:ALL'
-          state: present
-        become: yes
-
       - name: 'Faz download do wordpress'
         get_url:
           url: https://br.wordpress.org/latest-pt_BR.tar.gz
@@ -100,6 +86,7 @@
             - { chave: 'nome_do_banco_de_dados_aqui', valor: 'softcube_db' }
             - { chave: 'nome_de_usuario_aqui', valor: 'softcube' }
             - { chave: 'senha_aqui', valor: 'Brasil@77!' }
+            - { chave: 'localhost', valor: '192.168.0.250'}
         become: yes
 
       - name: 'Serve o Wordpress no Apache'
@@ -109,3 +96,46 @@
         become: yes
         notify:
           - restart apache
+
+  - hosts: mysql
+    handlers:
+      - name: restart mysql
+        service:
+          name: mysql
+          state: restarted
+        become: yes
+    tasks:
+      - name: 'Instala pacotes de dependências do sistema operacional'
+        apt:
+          name:
+            - mysql-server-5.7
+            - python-mysqldb
+          state: latest
+        become: yes
+
+      - name: 'Cria o banco de dados da Softcube'
+        mysql_db:
+          name: softcube_db
+          state: present
+        become: yes
+
+      - name: 'Criar usuário no banco de dados'
+        mysql_user:
+          name: softcube
+          password: Brasil@77!
+          priv: 'softcube_db.*:ALL'
+          state: present
+          host: "{{ item }}"
+        become: yes
+        with_items:
+          - 'localhost'
+          - '127.0.0.1'
+          - '192.168.0.240'
+
+      - name: 'Configura o MySQL para acesso remoto'
+        copy:
+          src: /configs/mysql/mysqld.cnf
+          dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+        become: yes
+        notify:
+          - restart mysql

@@ -72,4 +72,17 @@ Vagrant.configure("2") do |config|
     wordpress.vm.provision "shell", inline: $copy_public_key
     wordpress.vm.provision "shell", inline: $install_python
   end
+
+  config.vm.define "mysql" do |mysql|
+    mysql.vm.provider "virtualbox" do |vb|
+      vb.name = "mysql"
+      vb.cpus = 4
+      vb.memory = 2048
+    end
+
+    mysql.vm.network "public_network", ip: "192.168.0.250"
+    mysql.vm.synced_folder "./configs", "/configs"
+    mysql.vm.provision "shell", inline: $copy_public_key
+    mysql.vm.provision "shell", inline: $install_python
+  end
 end

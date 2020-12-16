@@ -1,5 +1,5 @@
 # Ignoring the Vagrant folder
-.vagrant
+.vagrant/*
 
 # Ignoring the private key
 configs/anskey
