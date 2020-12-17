@@ -17,7 +17,7 @@
 # escpecially if they contain "#" chars...
 # Remember to edit /etc/mysql/debian.cnf when changing the socket location.
 
-# Here is entries for some specific programs
+# Here is entries for some specific programs...
 # The following values assume you have at least 32M ram
 
 [mysqld_safe]

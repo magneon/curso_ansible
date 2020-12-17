@@ -1,0 +1,15 @@
+---
+- name: 'Instala pacotes de dependências do sistema operacional'
+  apt:
+    name:
+      - php7.2
+      - apache2
+      - libapache2-mod-php7.2
+      - php7.2-gd
+      - php-ssh2
+      - libmcrypt-dev
+      - mysql-server-5.7
+      - python-mysqldb
+      - php7.2-mysql
+    state: latest
+  become: yes

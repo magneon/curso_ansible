@@ -1,0 +1,42 @@
+---
+- name: 'Faz download do wordpress'
+  get_url:
+    url: https://br.wordpress.org/latest-pt_BR.tar.gz
+    dest: /tmp/latest-pt_BR.tar.gz
+
+- name: 'Descompactar projeto do wordpress'
+  unarchive:
+    src: /tmp/latest-pt_BR.tar.gz
+    dest: /var/www/
+    remote_src: yes
+  become: yes
+
+- name: 'Copia o arquivo de configuração do Wordpress'
+  copy:
+    src: "{{ wp_install_dir }}/wp-config-sample.php"
+    dest: "{{ wp_install_dir }}/wp-config.php"
+    remote_src: yes
+  become: yes
+
+- name: 'Configura o wordpress'
+  template:
+    src: /configs/roles/wordpress/templates/wp-config.php.j2
+    dest: '{{ wp_install_dir }}/wp-config.php'
+  # replace:
+  #   path: "{{ wp_install_dir }}/wp-config.php"
+  #   regexp: '{{ item.chave }}'
+  #   replace: '{{ item.valor }}'
+  # with_items:
+  #     - { chave: 'nome_do_banco_de_dados_aqui', valor: "{{ wp_database_name }}" }
+  #     - { chave: 'nome_de_usuario_aqui', valor: "{{ wp_database_user }}" }
+  #     - { chave: 'senha_aqui', valor: "{{ wp_database_pass }}" }
+  #     - { chave: 'localhost', valor: "{{ wp_database_ip }}" }
+  become: yes
+
+- name: 'Serve o Wordpress no Apache'
+  template:
+    src: /configs/roles/apache/templates/000-default.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+  become: yes
+  notify:
+    - restart apache

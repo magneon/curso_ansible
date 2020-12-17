@@ -1,0 +1,7 @@
+---
+wp_database_name: default_db
+wp_database_user: common_user
+wp_database_pass: common_pass
+wp_host_ip:
+  - localhost
+  - '127.0.0.1'

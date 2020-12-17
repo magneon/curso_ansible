@@ -1,0 +1,33 @@
+---
+- name: 'Instala pacotes de dependências do sistema operacional'
+  apt:
+    name:
+      - mysql-server-5.7
+      - python-mysqldb
+    state: latest
+  become: yes
+
+- name: 'Cria o banco de dados da Softcube'
+  mysql_db:
+    name: "{{ wp_database_name }}"
+    state: present
+  become: yes
+
+- name: 'Criar usuário no banco de dados'
+  mysql_user:
+    name: "{{ wp_database_user }}"
+    password: "{{ wp_database_pass }}"
+    priv: "{{ wp_database_name }}.*:ALL"
+    state: present
+    host: "{{ item }}"
+  become: yes
+  with_items:
+    - "{{ wp_host_ip }}"
+
+- name: 'Configura o MySQL para acesso remoto'
+  copy:
+    src: /configs/roles/mysql/files/mysqld.cnf
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+  become: yes
+  notify:
+    - restart mysql
